@@ -149,7 +149,7 @@ export default Ember.Component.extend(ClusterDriver, {
       set(this, 'cluster.%%DRIVERNAME%%EngineConfig', config);
       set(this, 'config', config);
     } else {
-      set(this, 'vswitchId', get(this, 'config.masterVswitchIds')[0]);
+      set(this, 'vswitchId', get(this, 'config.masterVswitchIds')[0] || '');
     }
   },
   /*!!!!!!!!!!!DO NOT CHANGE END!!!!!!!!!!!*/
