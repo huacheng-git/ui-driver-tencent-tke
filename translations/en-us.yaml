@@ -12,6 +12,8 @@ clusterNew:
       detail: Choose the VPC and Kubernetes version that will be used to launch Tencent Kubernetes Service
       next: "Next: Select Instance Type"
       loading: "Loading Availability Zones from Tencent Cloud"
+      name:
+        required: Cluster name is required
     node:
       title: Instance Type
       detail: Choose the instance type that will be used to launch Tencent Kubernetes Service

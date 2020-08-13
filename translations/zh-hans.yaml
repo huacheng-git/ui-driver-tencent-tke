@@ -12,6 +12,8 @@ clusterNew:
       detail: 选择腾讯云Kubernetes服务中使用的VPC和版本
       next: '下一步: 选择主机类型'
       loading: '从腾讯云获取可用区信息'
+      name:
+        required: 请输入集群名称
     node:
       title: 主机类型
       detail: 选择腾讯云Kubernetes服务中使用的主机类型

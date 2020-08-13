@@ -69,8 +69,8 @@ const BAND_WIDTH = [
 ];
 
 const languages = {
-  'en-us':   {"clusterNew":{"tencenttke":{"label":"Tencent Kubernetes Engine","shortLabel":"Tencent TKE","access":{"next":"Next: Configure Cluster","loading":"Loading VPCs from Tencent Cloud","title":"Account Access","detail":"Choose the region and API Key that will be used to launch Tencent Kubernetes Service"},"cluster":{"title":"Cluster Configuration","detail":"Choose the VPC and Kubernetes version that will be used to launch Tencent Kubernetes Service","next":"Next: Select Instance Type","loading":"Loading Availability Zones from Tencent Cloud"},"node":{"title":"Instance Type","detail":"Choose the instance type that will be used to launch Tencent Kubernetes Service","next":"Next: Configure Instance","loading":"Loading configuration from Tencent Cloud"},"instance":{"title":"Instance Configuration","detail":"Configure the instance that will be used to launch Tencent Kubernetes Service"},"subnet":{"label":"Subnet","required":"Subnet is required"},"os":{"label":"Operating System"},"disk":{"LOCAL_BASIC":"Local Basic","LOCAL_SSD":"Local SSD","CLOUD_BASIC":"Cloud Basic","CLOUD_PREMIUM":"Cloud Premium","CLOUD_SSD":"Cloud SSD"},"rootSize":{"label":"Root Disk Size","placeholder":"e.g. 25"},"rootType":{"label":"Root Disk Type"},"storageType":{"label":"Data Disk Type"},"storageSize":{"label":"Data Disk Size","placeholder":"e.g. 10"},"bandwidth":{"label":"Band Width","placeholder":"e.g. 10"},"nodeCount":{"label":"Node Count","placeholder":"e.g. 3","required":"Node Count is required","help":"The count of nodes will be launched in this Kubernetes cluster"},"bandwidthType":{"label":"Band Width Type","hour":"Pay By Hour","traffic":"Pay By Traffic"},"keyPair":{"label":"Key Pair","required":"Key Pair is required"},"region":{"label":"Region"},"secretId":{"label":"Secret ID","placeholder":"Your Tencent Cloud secret id","required":"Secret ID is required"},"secretKey":{"label":"Secret Key","placeholder":"Your Tencent Cloud secret key","provided":"Provided","required":"Secret Key is required"},"securityGroup":{"label":"Security Group","required":"Security Group is required"},"vpc":{"label":"VPC","required":"VPC is required"},"version":{"label":"Kubernetes Version"},"cidr":{"label":"Container Network CIDR","placeholder":"e.g. 172.16.0.0/16","required":"Container Network CIDR is required"},"zone":{"label":"Availability Zone","required":"Availability Zone is required"},"instanceType":{"label":"Instance Type","required":"Instance Type is required"},"regions":{"ap-guangzhou":"Guangzhou","ap-shanghai":"Shanghai","ap-beijing":"Beijing","ap-chengdu":"Chengdu","ap-chongqing":"Chongqing","ap-nanjing":"Nanjing","ap-hongkong":"Hong Kong","ap-singapore":"Singapore","na-toronto":"Toronto","ap-bangkok":"Bangkok","ap-mumbai":"Mumbai","ap-seoul":"Seoul","ap-tokyo":"Tokyo","na-siliconvalley":"Silicon Valley","na-ashburn":"Virginia","eu-frankfurt":"Frankfurt","eu-moscow":"Moscow"}}}},
-  'zh-hans': {"clusterNew":{"tencenttke":{"label":"腾讯云Kubernetes服务","shortLabel":"Tencent TKE","access":{"next":"下一步: 配置集群","loading":"从腾讯云获取VPC信息","title":"账户认证","detail":"选择腾讯云Kubernetes服务所使用的区域"},"cluster":{"title":"集群配置","detail":"选择腾讯云Kubernetes服务中使用的VPC和版本","next":"下一步: 选择主机类型","loading":"从腾讯云获取可用区信息"},"node":{"title":"主机类型","detail":"选择腾讯云Kubernetes服务中使用的主机类型","next":"下一步: 配置节点","loading":"从腾讯云获取节点配置信息"},"instance":{"title":"节点配置","detail":"配置腾讯云Kubernetes服务中的节点"},"subnet":{"label":"子网","required":"请选择子网"},"os":{"label":"操作系统"},"disk":{"LOCAL_BASIC":"Local Basic","LOCAL_SSD":"Local SSD","CLOUD_BASIC":"Cloud Basic","CLOUD_PREMIUM":"Cloud Premium","CLOUD_SSD":"Cloud SSD"},"rootSize":{"label":"系统盘大小","placeholder":"例如: 25"},"rootType":{"label":"系统盘类型"},"storageType":{"label":"数据盘类型"},"storageSize":{"label":"数据盘大小","placeholder":"例如: 10"},"bandwidth":{"label":"带宽","placeholder":"例如: 10"},"nodeCount":{"label":"节点数量","placeholder":"例如: 3","required":"请输入节点数量","help":"将要创建的腾讯云Kubernetes服务中所含有的节点数量"},"bandwidthType":{"label":"带宽类型","hour":"按带宽使用时长计费","traffic":"按流量计费"},"keyPair":{"label":"密钥","required":"请选择密钥"},"region":{"label":"区域"},"secretId":{"label":"密钥ID","placeholder":"您的腾讯云API密钥ID","required":"请输入密钥ID"},"secretKey":{"label":"密钥","placeholder":"您的腾讯云API密钥","provided":"已提供","required":"请输入密钥"},"securityGroup":{"label":"安全组","required":"请选择安全组"},"vpc":{"label":"VPC","required":"请选择VPC"},"version":{"label":"Kubernetes版本"},"cidr":{"label":"容器网络 CIDR","placeholder":"例如: 172.16.0.0/16","required":"请输入容器网络的CIDR"},"zone":{"label":"可用区","required":"请选择可用区"},"instanceType":{"label":"实例类型","required":"请选择实例类型"},"regions":{"ap-guangzhou":"广州","ap-shanghai":"上海","ap-beijing":"北京","ap-chengdu":"成都","ap-chongqing":"重庆","ap-nanjing":"南京","ap-hongkong":"香港","ap-singapore":"新加坡","na-toronto":"多伦多","ap-bangkok":"曼谷","ap-mumbai":"孟买","ap-seoul":"首尔","ap-tokyo":"东京","na-siliconvalley":"硅谷","na-ashburn":"弗吉尼亚","eu-frankfurt":"法兰克福","eu-moscow":"莫斯科"}}}} 
+  'en-us':   {"clusterNew":{"tencenttke":{"label":"Tencent Kubernetes Engine","shortLabel":"Tencent TKE","access":{"next":"Next: Configure Cluster","loading":"Loading VPCs from Tencent Cloud","title":"Account Access","detail":"Choose the region and API Key that will be used to launch Tencent Kubernetes Service"},"cluster":{"title":"Cluster Configuration","detail":"Choose the VPC and Kubernetes version that will be used to launch Tencent Kubernetes Service","next":"Next: Select Instance Type","loading":"Loading Availability Zones from Tencent Cloud","name":{"required":"Cluster name is required"}},"node":{"title":"Instance Type","detail":"Choose the instance type that will be used to launch Tencent Kubernetes Service","next":"Next: Configure Instance","loading":"Loading configuration from Tencent Cloud"},"instance":{"title":"Instance Configuration","detail":"Configure the instance that will be used to launch Tencent Kubernetes Service"},"subnet":{"label":"Subnet","required":"Subnet is required"},"os":{"label":"Operating System"},"disk":{"LOCAL_BASIC":"Local Basic","LOCAL_SSD":"Local SSD","CLOUD_BASIC":"Cloud Basic","CLOUD_PREMIUM":"Cloud Premium","CLOUD_SSD":"Cloud SSD"},"rootSize":{"label":"Root Disk Size","placeholder":"e.g. 25"},"rootType":{"label":"Root Disk Type"},"storageType":{"label":"Data Disk Type"},"storageSize":{"label":"Data Disk Size","placeholder":"e.g. 10"},"bandwidth":{"label":"Band Width","placeholder":"e.g. 10"},"nodeCount":{"label":"Node Count","placeholder":"e.g. 3","required":"Node Count is required","help":"The count of nodes will be launched in this Kubernetes cluster"},"bandwidthType":{"label":"Band Width Type","hour":"Pay By Hour","traffic":"Pay By Traffic"},"keyPair":{"label":"Key Pair","required":"Key Pair is required"},"region":{"label":"Region"},"secretId":{"label":"Secret ID","placeholder":"Your Tencent Cloud secret id","required":"Secret ID is required"},"secretKey":{"label":"Secret Key","placeholder":"Your Tencent Cloud secret key","provided":"Provided","required":"Secret Key is required"},"securityGroup":{"label":"Security Group","required":"Security Group is required"},"vpc":{"label":"VPC","required":"VPC is required"},"version":{"label":"Kubernetes Version"},"cidr":{"label":"Container Network CIDR","placeholder":"e.g. 172.16.0.0/16","required":"Container Network CIDR is required"},"zone":{"label":"Availability Zone","required":"Availability Zone is required"},"instanceType":{"label":"Instance Type","required":"Instance Type is required"},"regions":{"ap-guangzhou":"Guangzhou","ap-shanghai":"Shanghai","ap-beijing":"Beijing","ap-chengdu":"Chengdu","ap-chongqing":"Chongqing","ap-nanjing":"Nanjing","ap-hongkong":"Hong Kong","ap-singapore":"Singapore","na-toronto":"Toronto","ap-bangkok":"Bangkok","ap-mumbai":"Mumbai","ap-seoul":"Seoul","ap-tokyo":"Tokyo","na-siliconvalley":"Silicon Valley","na-ashburn":"Virginia","eu-frankfurt":"Frankfurt","eu-moscow":"Moscow"}}}},
+  'zh-hans': {"clusterNew":{"tencenttke":{"label":"腾讯云Kubernetes服务","shortLabel":"Tencent TKE","access":{"next":"下一步: 配置集群","loading":"从腾讯云获取VPC信息","title":"账户认证","detail":"选择腾讯云Kubernetes服务所使用的区域"},"cluster":{"title":"集群配置","detail":"选择腾讯云Kubernetes服务中使用的VPC和版本","next":"下一步: 选择主机类型","loading":"从腾讯云获取可用区信息","name":{"required":"请输入集群名称"}},"node":{"title":"主机类型","detail":"选择腾讯云Kubernetes服务中使用的主机类型","next":"下一步: 配置节点","loading":"从腾讯云获取节点配置信息"},"instance":{"title":"节点配置","detail":"配置腾讯云Kubernetes服务中的节点"},"subnet":{"label":"子网","required":"请选择子网"},"os":{"label":"操作系统"},"disk":{"LOCAL_BASIC":"Local Basic","LOCAL_SSD":"Local SSD","CLOUD_BASIC":"Cloud Basic","CLOUD_PREMIUM":"Cloud Premium","CLOUD_SSD":"Cloud SSD"},"rootSize":{"label":"系统盘大小","placeholder":"例如: 25"},"rootType":{"label":"系统盘类型"},"storageType":{"label":"数据盘类型"},"storageSize":{"label":"数据盘大小","placeholder":"例如: 10"},"bandwidth":{"label":"带宽","placeholder":"例如: 10"},"nodeCount":{"label":"节点数量","placeholder":"例如: 3","required":"请输入节点数量","help":"将要创建的腾讯云Kubernetes服务中所含有的节点数量"},"bandwidthType":{"label":"带宽类型","hour":"按带宽使用时长计费","traffic":"按流量计费"},"keyPair":{"label":"密钥","required":"请选择密钥"},"region":{"label":"区域"},"secretId":{"label":"密钥ID","placeholder":"您的腾讯云API密钥ID","required":"请输入密钥ID"},"secretKey":{"label":"密钥","placeholder":"您的腾讯云API密钥","provided":"已提供","required":"请输入密钥"},"securityGroup":{"label":"安全组","required":"请选择安全组"},"vpc":{"label":"VPC","required":"请选择VPC"},"version":{"label":"Kubernetes版本"},"cidr":{"label":"容器网络 CIDR","placeholder":"例如: 172.16.0.0/16","required":"请输入容器网络的CIDR"},"zone":{"label":"可用区","required":"请选择可用区"},"instanceType":{"label":"实例类型","required":"请选择实例类型"},"regions":{"ap-guangzhou":"广州","ap-shanghai":"上海","ap-beijing":"北京","ap-chengdu":"成都","ap-chongqing":"重庆","ap-nanjing":"南京","ap-hongkong":"香港","ap-singapore":"新加坡","na-toronto":"多伦多","ap-bangkok":"曼谷","ap-mumbai":"孟买","ap-seoul":"首尔","ap-tokyo":"东京","na-siliconvalley":"硅谷","na-ashburn":"弗吉尼亚","eu-frankfurt":"法兰克福","eu-moscow":"莫斯科"}}}} 
 };
 
 
@@ -373,7 +373,7 @@ export default Ember.Component.extend(ClusterDriver, {
     if ( !get(this, 'selectedZone') || !get(this, 'allSubnets') ) {
       return;
     }
-    const subnets = get(this, 'allSubnets').filter((subnet) => get(subnet, 'vpcId') === get(this, 'config.vpcId') && get(subnet, 'zone') === get(this, 'selectedZone.label'));
+    const subnets = get(this, 'allSubnets').filter((subnet) => get(subnet, 'vpcId') === get(this, 'config.vpcId') && get(subnet, 'zone') === get(this, 'selectedZone.queryLabel'));
     const subnetId = get(this, 'config.subnetId');
 
     if ( get(this, 'isNew') && get(subnets, 'length') ) {
@@ -387,11 +387,15 @@ export default Ember.Component.extend(ClusterDriver, {
     }
   }),
 
+  reloadZones: observer('intl.locale', function() {
+    this.fetchZones();
+  }),
+
   subnetChoices: computed('selectedZone', 'allSubnets', 'config.vpcId', 'vpcChoices.[]', function() {
     if ( !get(this, 'selectedZone') || !get(this, 'allSubnets') ) {
       return;
     }
-    const subnets = get(this, 'allSubnets').filter((subnet) => get(subnet, 'vpcId') === get(this, 'config.vpcId') && get(subnet, 'zone') === get(this, 'selectedZone.label'));
+    const subnets = get(this, 'allSubnets').filter((subnet) => get(subnet, 'vpcId') === get(this, 'config.vpcId') && get(subnet, 'zone') === get(this, 'selectedZone.queryLabel'));
 
     return subnets;
   }),
@@ -400,7 +404,7 @@ export default Ember.Component.extend(ClusterDriver, {
     if ( !get(this, 'selectedZone') || !get(this, 'allInstances') ) {
       return;
     }
-    const instances = get(this, 'allInstances').filterBy('zone', get(this, 'selectedZone.label'));
+    const instances = get(this, 'allInstances').filterBy('zone', get(this, 'selectedZone.queryLabel'));
 
     const instanceType = get(this, 'config.instanceType');
 
@@ -459,6 +463,18 @@ export default Ember.Component.extend(ClusterDriver, {
     const intl = get(this, 'intl');
 
     return intl.t(`clusterNew.tencenttke.regions.${ get(this, 'config.region') }`);
+  }),
+
+  vpcShowValue: computed('vpcChoices.[]', 'config.vpcId', 'intl.locale', function() {
+    return (get(this, 'vpcChoices').findBy('value', get(this, 'config.vpcId')) || {}).label
+  }),
+
+  subnetShowValue: computed('subnetChoices.[]', 'config.subnetId', 'intl.locale', function() {
+    return (get(this, 'subnetChoices').findBy('value', get(this, 'config.subnetId')) || {}).label
+  }),
+
+  instanceTypeShowValue: computed('allInstances.[]', 'config.instanceType', 'intl.locale', function() {
+    return (get(this, 'allInstances').findBy('value', get(this, 'config.instanceType')) || {}).label
   }),
 
   checkCidr() {
@@ -598,7 +614,7 @@ export default Ember.Component.extend(ClusterDriver, {
   fetchDiskConfigQuota() {
     return this.queryFromTencent('cbs', 'DescribeDiskConfigQuota', ENDPOINT, {
       InquiryType:          'INQUIRY_CVM_CONFIG',
-      'Zones.0':            ((get(this, 'zoneChoices') || []).findBy('value', get(this, 'config.zoneId')) || {}).label,
+      'Zones.0':            ((get(this, 'zoneChoices') || []).findBy('value', get(this, 'config.zoneId')) || {}).queryLabel,
       'InstanceFamilies.0': (get(this, 'config.instanceType') || '').split('.').get('firstObject')
     }).then((res) => {
       const diskConfigSet = get(res, 'DiskConfigSet').filter((d) => d.DiskChargeType === 'POSTPAID_BY_HOUR')
@@ -632,11 +648,16 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchZones() {
-    return this.queryFromTencent('cvm', 'DescribeZones').then((res) => {
+    const extraParams = {};
+
+    get(this, 'intl.locale')[0] === 'zh-hans' ? set(extraParams, 'Language', 'zh-CN') : {};
+    
+    return this.queryFromTencent('cvm', 'DescribeZones', ENDPOINT, extraParams).then((res) => {
       set(this, 'zoneChoices', get(res, 'ZoneSet').filterBy('ZoneState', 'AVAILABLE').map((zone) => {
         return {
-          label: get(zone, 'Zone'),
-          value: get(zone, 'ZoneId')
+          label:      get(zone, 'ZoneName'),
+          value:      get(zone, 'ZoneId'),
+          queryLabel: get(zone, 'Zone')
         };
       }));
 
