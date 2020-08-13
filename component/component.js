@@ -454,6 +454,12 @@ export default Ember.Component.extend(ClusterDriver, {
 
     return get(disk, 'minDiskSize')
   }),
+  
+  regionShowValue: computed('regionChoices.[]', 'config.region', 'intl.locale', function() {
+    const intl = get(this, 'intl');
+
+    return intl.t(`clusterNew.tencenttke.regions.${ get(this, 'config.region') }`);
+  }),
 
   checkCidr() {
     if ( get(this, 'isNew') ) {
