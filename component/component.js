@@ -27,36 +27,6 @@ const CCS_ENDPOINT = 'api.qcloud.com/v2/index.php';
 const DATA_DISK = 'DATA_DISK'
 const SYSTEM_DISK = 'SYSTEM_DISK'
 
-const OS = [
-  {
-    label: 'Ubuntu Server 16.04.1 LTS 64bit',
-    value: 'ubuntu16.04.1 LTSx86_64'
-  },
-  {
-    label: 'CentOS 7.2 64bit',
-    value: 'centos7.2x86_64'
-  }
-]
-
-const VERSIONS = [
-  {
-    label: '1.10.5',
-    value: '1.10.5'
-  },
-  {
-    label: '1.12.4',
-    value: '1.12.4'
-  },
-  {
-    label: '1.14.3',
-    value: '1.14.3'
-  },
-  {
-    label: '1.16.3',
-    value: '1.16.3'
-  },
-];
-
 const BAND_WIDTH = [
   {
     label: 'clusterNew.tencenttke.bandwidthType.hour',
@@ -88,8 +58,8 @@ export default Ember.Component.extend(ClusterDriver, {
 
   step:               1,
   regionChoices:      [],
-  versionChoices:     VERSIONS,
-  osChoices:          OS,
+  versionChoices:     [],
+  osChoices:          [],
   bandWidthChoices:   BAND_WIDTH,
   zoneChoices:        null,
   vpcChoices:         null,
@@ -124,7 +94,7 @@ export default Ember.Component.extend(ClusterDriver, {
       config = this.get('globalStore').createRecord({
         type:           configField,
         clusterCidr:    '172.16.0.0/16',
-        clusterVersion: get(VERSIONS, 'lastObject.value'),
+        clusterVersion: null,
         region:         'ap-guangzhou',
         secretId:       null,
         secretKey:      null,
@@ -132,7 +102,7 @@ export default Ember.Component.extend(ClusterDriver, {
         vpcId:          null,
         subnetId:       null,
         instanceType:   'S2.MEDIUM4',
-        osName:         'ubuntu16.04.1 LTSx86_64',
+        osName:         'ubuntu18.04.1x86_64',
         sgId:           null,
         rootSize:       100,
         storageSize:    100,
@@ -208,7 +178,8 @@ export default Ember.Component.extend(ClusterDriver, {
       return all([
         this.fetchRegions(),
         this.fetchVpcs(),
-        this.fetchSubnets()
+        this.fetchSubnets(),
+        this.fetchVersions()
       ]).then(() => {
         set(this, 'step', 2);
         cb(true);
@@ -251,6 +222,7 @@ export default Ember.Component.extend(ClusterDriver, {
           all([
             this.fetchZones(),
             this.fetchNodeTypes(),
+            this.fetchImages(),
           ]).then(() => {
             set(this, 'step', 3);
             cb(true);
@@ -389,6 +361,11 @@ export default Ember.Component.extend(ClusterDriver, {
 
   reloadZones: observer('intl.locale', function() {
     this.fetchZones();
+  }),
+
+  regionDidChange: observer('config.region', function() {
+    set(this, 'config.vpcId', null);
+    this.fetchVpcs();
   }),
 
   subnetChoices: computed('selectedZone', 'allSubnets', 'config.vpcId', 'vpcChoices.[]', function() {
@@ -583,6 +560,23 @@ export default Ember.Component.extend(ClusterDriver, {
     })
   },
 
+  fetchVersions() {
+    return this.queryFromTencent('tke', 'DescribeVersions', ENDPOINT, {
+      Version: '2018-05-25'
+    }).then((res) => {
+      set(this, 'versionChoices', get(res, 'VersionInstanceSet').map((key) => {
+        return {
+          label: get(key, 'Version'),
+          value: get(key, 'Version')
+        };
+      }));
+
+      if ( !get(this, 'config.clusterVersion') && get(this, 'versionChoices.length') ) {
+        set(this, 'config.clusterVersion', get(this, 'versionChoices.lastObject.value'));
+      }
+    });
+  },
+
   fetchNodeTypes() {
     return this.queryFromTencent('cvm', 'DescribeInstanceTypeConfigs').then((res) => {
       set(this, 'allInstances', get(res, 'InstanceTypeConfigSet').map((instance) => {
@@ -591,6 +585,23 @@ export default Ember.Component.extend(ClusterDriver, {
           label:  `${ get(instance, 'InstanceType') } (CPU ${ get(instance, 'CPU') } Memory ${ get(instance, 'Memory') } GiB)`,
           group:  get(instance, 'InstanceFamily'),
           zone:   get(instance, 'Zone'),
+        };
+      }));
+    });
+  },
+
+  fetchImages() {
+    return this.queryFromTencent('tke', 'DescribeImages', ENDPOINT, {
+      Version: '2018-05-25'
+    }).then((res) => {
+      set(this, 'osChoices', get(res, 'ImageInstanceSet').filter((image) => {
+        const label = get(image, 'Alias');
+
+        return !(label.includes('GPU') || label.includes('BMS') || label.includes('Tencent') || label.includes('TKE-Optimized'))
+      }).sort((a, b) => get(a, 'Alias') > get(b, 'Alias') ? -1 : 1).map((image) => {
+        return {
+          label:  get(image, 'Alias'),
+          value:  get(image, 'OsName'),
         };
       }));
     });
