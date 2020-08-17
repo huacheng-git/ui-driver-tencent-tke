@@ -91,7 +91,7 @@
             {{t "clusterNew.tencenttke.version.label"}}
           </label>
           {{#input-or-display
-            editable=(and (eq step 2) isNew)
+            editable=(eq step 2)
             value=config.clusterVersion
           }}
             {{searchable-select
