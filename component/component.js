@@ -182,7 +182,6 @@ export default Ember.Component.extend(ClusterDriver, {
       return all([
         this.fetchRegions(),
         this.fetchVpcs(),
-        this.fetchSubnets(),
         this.fetchVersions()
       ]).then(() => {
         set(this, 'step', 2);
@@ -224,6 +223,7 @@ export default Ember.Component.extend(ClusterDriver, {
       return this.checkCidr().then((res) => {
         if (get(res, 'code') === 0 ) {
           all([
+            this.fetchSubnets(),
             this.fetchZones(),
             this.fetchNodeTypes(),
             this.fetchImages(),
@@ -439,7 +439,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
     return get(disk, 'minDiskSize')
   }),
-  
+
   regionShowValue: computed('regionChoices.[]', 'config.region', 'intl.locale', function() {
     const intl = get(this, 'intl');
 
@@ -666,7 +666,7 @@ export default Ember.Component.extend(ClusterDriver, {
     const extraParams = {};
 
     get(this, 'intl.locale')[0] === 'zh-hans' ? set(extraParams, 'Language', 'zh-CN') : {};
-    
+
     return this.queryFromTencent('cvm', 'DescribeZones', ENDPOINT, extraParams).then((res) => {
       set(this, 'zoneChoices', get(res, 'ZoneSet').filterBy('ZoneState', 'AVAILABLE').map((zone) => {
         return {
