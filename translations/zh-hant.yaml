@@ -3,17 +3,17 @@ clusterNew:
     label: 騰訊雲Kubernetes服務
     shortLabel: Tencent TKE
     access:
-      next: '下一步: 配置集群'
+      next: '下一步: 配置集羣'
       loading: '從騰訊雲獲取VPC信息'
       title: 賬戶認證
       detail: 選擇騰訊雲Kubernetes服務所使用的區域
     cluster:
-      title: 集群配置
+      title: 集羣配置
       detail: 選擇騰訊雲Kubernetes服務中使用的VPC和版本
       next: '下一步: 選擇主機類型'
       loading: '從騰訊雲獲取可用區信息'
       name:
-        required: 請輸入集群名稱
+        required: 請輸入集羣名稱
     node:
       title: 主機類型
       detail: 選擇騰訊雲Kubernetes服務中使用的主機類型
