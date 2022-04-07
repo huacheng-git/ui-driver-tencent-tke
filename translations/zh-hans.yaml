@@ -77,6 +77,8 @@ clusterNew:
       required: 请选择VPC
     version:
       label: Kubernetes版本
+      warning: “{version}”，此版本不在 Rancher 支持矩阵范围内，请升级 Rancher 版本。可参考
+      warningTip: Rancher 支持矩阵。
     cidr:
       label: 容器网络 CIDR
       placeholder: '例如: 172.16.0.0/16'
