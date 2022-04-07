@@ -123,6 +123,14 @@
           {{/input-or-display}}
         </div>
       </div>
+      {{#if kubernetesVersionDisabled}}
+        {{#banner-message color="bg-warning"}}
+          <p>
+            {{t "clusterNew.tencenttke.version.warning" version=config.clusterVersion}}
+            <a href="https://www.suse.com/suse-rancher/support-matrix/all-supported-versions" target="_blank">{{t "clusterNew.tencenttke.version.warningTip"}}</a>
+          </p>
+        {{/banner-message}}
+      {{/if}}
       <div class="row">
         <div class="col span-6">
           <label class="acc-label">
