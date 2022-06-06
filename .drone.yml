@@ -8,58 +8,70 @@ platform:
   arch: amd64
 
 steps:
-- name: build
-  image: node
-  commands:
-  - npm install
-  - npm run build
-  when:
-    event:
-    - push
-    - tag
+  - name: build
+    image: node
+    commands:
+    - npm install
+    - npm run build
+    when:
+      event:
+      - push
+      - tag
 
-- name: upload-test-to-oss
-  image: wangsiye/aliyun-ossutil:latest
-  environment:
-    OSS_KEY_ID:
-      from_secret: OSS_KEY_ID
-    OSS_KEY_SECRET:
-      from_secret: OSS_KEY_SECRET
-  commands:
-  - ossutil config  -L CH -e "oss-cn-beijing.aliyuncs.com" -i $OSS_KEY_ID -k $OSS_KEY_SECRET
-  - ossutil cp -rf ./dist oss://rancher2-drivers/pandaria/ui/cluster-driver-tencent/${DRONE_TAG}
-  when:
-    event:
-    - push
+  - name: upload-test-to-oss
+    image: jacie/drone-aliyun-oss
+    pull: always
+    environment:
+      ALIYUN_ACCESS_KEY_ID:
+        from_secret: aliyun_access_id
+      ALIYUN_SECRET_ACCESS_KEY:
+        from_secret: aliyun_access_secret
+      PLUGIN_SOURCE: ./dist
+      ALIYUN_BUCKET: oss://dev-tool
+      ALIYUN_ENDPOINT: http://oss-cn-shenzhen.aliyuncs.com
+      PLUGIN_TARGET: tencent-tke
+      PLUGIN_RECURSIVE: -r
+      PLUGIN_ACCESS: public-read
+    commands:
+      - "aliyun-oss"
+    when:
+      event:
+        - push
 
-- name: deployment-to-oss
-  image: wangsiye/aliyun-ossutil:latest
-  environment:
-    OSS_KEY_ID:
-      from_secret: OSS_KEY_ID
-    OSS_KEY_SECRET:
-      from_secret: OSS_KEY_SECRET
-  commands:
-  - ossutil config  -L CH -e "oss-cn-beijing.aliyuncs.com" -i $OSS_KEY_ID -k $OSS_KEY_SECRET
-  - ossutil cp -rf ./dist oss://rancher2-drivers/pandaria/ui/cluster-driver-tencent/${DRONE_TAG}
-  when:
-    event:
-    - tag
+  - name: deployment-to-oss
+    image: jacie/drone-aliyun-oss
+    pull: always
+    environment:
+      ALIYUN_ACCESS_KEY_ID:
+        from_secret: aliyun_access_id
+      ALIYUN_SECRET_ACCESS_KEY:
+        from_secret: aliyun_access_secret
+      PLUGIN_SOURCE: ./dist
+      ALIYUN_BUCKET: oss://rancher2-drivers
+      ALIYUN_ENDPOINT: http://oss-cn-beijing.aliyuncs.com
+      PLUGIN_TARGET: pandaria/ui/cluster-driver-tencent/${DRONE_TAG}
+      PLUGIN_RECURSIVE: -r
+      PLUGIN_ACCESS: public-read
+    commands:
+      - "aliyun-oss"
+    when:
+      event:
+        - tag
 
-- name: github_binary_prerelease
-  image: plugins/github-release
-  settings:
-    api_key:
-      from_secret: github_token
-    checksum:
-    - sha256
-    files:
-    - dist/*
-    prerelease: true
-    title: "Pre-release ${DRONE_TAG}"
-  when:
-    event:
-    - tag
+  - name: github_binary_prerelease
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_token
+      checksum:
+        - sha256
+      files:
+        - dist/*
+      prerelease: true
+      title: "Pre-release ${DRONE_TAG}"
+    when:
+      event:
+        - tag
 
 node:
   instance: agent-amd64
