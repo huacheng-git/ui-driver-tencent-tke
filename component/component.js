@@ -470,14 +470,7 @@ export default Ember.Component.extend(ClusterDriver, {
   }),
 
   checkCidr() {
-    if ( get(this, 'isNew') ) {
-      return this.queryFromTencent('ccs', 'CheckClusterCIDR', CCS_ENDPOINT, {
-        clusterCIDR: get(this, 'config.clusterCidr'),
-        vpcId:       get(this, 'config.vpcId'),
-      });
-    } else {
-      return resolve({ code: 0 });
-    }
+    return resolve({ code: 0 });
   },
 
   queryFromTencent(product, action, endpoint = ENDPOINT, extraParams = {}) {
