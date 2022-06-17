@@ -185,11 +185,11 @@ export default Ember.Component.extend(ClusterDriver, {
         this.fetchVersions()
       ]).then(() => {
         set(this, 'step', 2);
-        cb(true);
+        cb && cb(true);
       }).catch((error) => {
         console.log(error);
 
-        cb(false);
+        cb && cb(false);
       });
     },
 
@@ -222,30 +222,15 @@ export default Ember.Component.extend(ClusterDriver, {
         return;
       }
 
-      return this.checkCidr().then((res) => {
-        if (get(res, 'code') === 0 ) {
-          all([
-            this.fetchSubnets(),
-            this.fetchZones(),
-            this.fetchNodeTypes(),
-            this.fetchImages(),
-          ]).then(() => {
-            set(this, 'step', 3);
-            cb(true);
-          }).catch(() => {
-            cb(false);
-          });
-        } else {
-          const error = decodeURIComponent(get(res, 'message'));
-
-          if ( error )  {
-            set(this, 'errors', [error]);
-          }
-          cb(false);
-        }
-      }).catch((error) => {
-        set(this, 'errors', [error]);
-
+      all([
+        this.fetchSubnets(),
+        this.fetchZones(),
+        this.fetchNodeTypes(),
+        this.fetchImages(),
+      ]).then(() => {
+        set(this, 'step', 3);
+        cb(true);
+      }).catch(() => {
         cb(false);
       });
     },
@@ -469,43 +454,24 @@ export default Ember.Component.extend(ClusterDriver, {
     })
   }),
 
-  checkCidr() {
-    return resolve({ code: 0 });
-  },
+  queryFromTencent(resource, externalParams = {}) {
+    const url = `/meta/tke/${resource}`
+    const query = Object.assign({}, externalParams, {
+      secretId: get(this, 'config.secretId'),
+      secretKey: get(this, 'config.secretKey'),
+    })
 
-  queryFromTencent(product, action, endpoint = ENDPOINT, extraParams = {}) {
-    const data = {
-      Action:          action,
-      Nonce:           Math.round(Math.random() * 65535),
-      Region:          get(this, 'config.region'),
-      SecretId:        get(this, 'config.secretId'),
-      SignatureMethod: 'HmacSHA1',
-      Timestamp:       Math.round(Date.now() / 1000),
-      Version:         '2017-03-12',
-      ...extraParams,
+    if(resource !== 'regions'){
+      query.regionId = get(this, 'config.region') || '';
     }
 
-    let url = `${ product }.${ endpoint }?`;
-    const params = [];
+    const req = {
+      url:     `${ url }?${ this.getQueryParamsString(query) }`,
+      method:  'GET',
+    };
 
-    Object.keys(data).sort().forEach((key) => {
-      params.push(`${ key }=${ data[key] }`);
-    });
-
-    url += params.join('&');
-
-    url += `&Signature=${ encodeURIComponent(AWS.util.crypto.hmac(
-      get(this, 'config.secretKey'),
-      `GET${ url }`,
-      'base64',
-      'sha1'
-    )) }`
-
-    return get(this, 'globalStore').rawRequest({
-      url:    `/meta/proxy/https:/${ url }`,
-      method: 'GET'
-    }).then((xhr) => {
-      const error = get(xhr, 'body.Response.Error.Message');
+    return get(this, 'globalStore').rawRequest(req).then((xhr) => {
+      const error = get(xhr, 'body.error');
 
       if ( error )  {
         set(this, 'errors', [error]);
@@ -515,7 +481,13 @@ export default Ember.Component.extend(ClusterDriver, {
 
       return get(xhr, 'body.Response') || JSON.parse(get(xhr, 'body'));
     }).catch((xhr) => {
-      const error = get(xhr, 'body.Response.Error.Message') || JSON.stringify(xhr);
+      let error = '';
+      const message = get(xhr, 'body.message')
+      if(message && message.includes('TencentCloudSDKError')){
+        error = this.tencentCloudSDKError(message)['Message'];
+      } else {
+        error = get(xhr, 'body.error') || JSON.stringify(xhr);
+      }
 
       set(this, 'errors', [error]);
 
@@ -523,10 +495,19 @@ export default Ember.Component.extend(ClusterDriver, {
     });
   },
 
+  tencentCloudSDKError(error){
+    const body = error.replace('[TencentCloudSDKError] ', '').split(',');
+    const obj = {};
+    body.forEach(item=>{
+      const arr = item.split('=');
+      obj[arr[0].trim()] = arr[1].trim();
+    })
+
+    return obj;
+  },
+
   fetchRegions() {
-    return this.queryFromTencent('tke', 'DescribeRegions', ENDPOINT, {
-      Version: '2018-05-25'
-    }).then((res) => {
+    return this.queryFromTencent('regions').then((res) => {
       set(this, 'regionChoices', get(res, 'RegionInstanceSet').map((region) => {
         return {
           label: `clusterNew.tencenttke.regions.${ get(region, 'RegionName') }`,
@@ -541,7 +522,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchVpcs() {
-    return this.queryFromTencent('vpc', 'DescribeVpcs').then((res) => {
+    return this.queryFromTencent('vpcs').then((res) => {
       set(this, 'vpcChoices', get(res, 'VpcSet').map((vpc) => {
         return {
           label: get(vpc, 'VpcName'),
@@ -556,7 +537,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchSubnets() {
-    return this.queryFromTencent('vpc', 'DescribeSubnets').then((res) => {
+    return this.queryFromTencent('subnets').then((res) => {
       set(this, 'allSubnets', get(res, 'SubnetSet').map((subnet) => {
         return {
           label: get(subnet, 'SubnetName'),
@@ -569,9 +550,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchVersions() {
-    return this.queryFromTencent('tke', 'DescribeVersions', ENDPOINT, {
-      Version: '2018-05-25'
-    }).then((res) => {
+    return this.queryFromTencent('versions').then((res) => {
       const versionRange = [ '1.16', '1.17', '1.18', '1.19', '1.20'];
       const versions = get(res, 'VersionInstanceSet').map((key) => {
         const enabled = versionRange.find(v=>{
@@ -600,7 +579,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchNodeTypes() {
-    return this.queryFromTencent('cvm', 'DescribeInstanceTypeConfigs').then((res) => {
+    return this.queryFromTencent('instanceTypeConfigs').then((res) => {
       set(this, 'allInstances', get(res, 'InstanceTypeConfigSet').map((instance) => {
         return {
           value:  get(instance, 'InstanceType'),
@@ -613,9 +592,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchImages() {
-    return this.queryFromTencent('tke', 'DescribeImages', ENDPOINT, {
-      Version: '2018-05-25'
-    }).then((res) => {
+    return this.queryFromTencent('images').then((res) => {
       set(this, 'osChoices', get(res, 'ImageInstanceSet').filter((image) => {
         const label = get(image, 'Alias');
 
@@ -630,7 +607,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchSecurityGroups() {
-    return this.queryFromTencent('vpc', 'DescribeSecurityGroups').then((res) => {
+    return this.queryFromTencent('securityGroups').then((res) => {
       set(this, 'sgChoices', get(res, 'SecurityGroupSet').map((zone) => {
         return {
           label: get(zone, 'SecurityGroupName'),
@@ -645,10 +622,10 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchDiskConfigQuota() {
-    return this.queryFromTencent('cbs', 'DescribeDiskConfigQuota', ENDPOINT, {
-      InquiryType:          'INQUIRY_CVM_CONFIG',
-      'Zones.0':            ((get(this, 'zoneChoices') || []).findBy('value', get(this, 'config.zoneId')) || {}).queryLabel,
-      'InstanceFamilies.0': (get(this, 'config.instanceType') || '').split('.').get('firstObject')
+    return this.queryFromTencent('diskConfigQuota', {
+      inquiryType: 'INQUIRY_CVM_CONFIG',
+      zones:       ((get(this, 'zoneChoices') || []).findBy('value', get(this, 'config.zoneId')) || {}).queryLabel,
+      instanceFamilies: (get(this, 'config.instanceType') || '').split('.').get('firstObject')
     }).then((res) => {
       const diskConfigSet = get(res, 'DiskConfigSet').filter((d) => d.DiskChargeType === 'POSTPAID_BY_HOUR')
       const dataDisks = diskConfigSet.filter((d) => d.DiskUsage === DATA_DISK)
@@ -666,7 +643,7 @@ export default Ember.Component.extend(ClusterDriver, {
   },
 
   fetchKeyPairs() {
-    return this.queryFromTencent('cvm', 'DescribeKeyPairs').then((res) => {
+    return this.queryFromTencent('keyPairs').then((res) => {
       set(this, 'keyChoices', get(res, 'KeyPairSet').map((key) => {
         return {
           label: get(key, 'KeyName'),
@@ -683,9 +660,9 @@ export default Ember.Component.extend(ClusterDriver, {
   fetchZones() {
     const extraParams = {};
 
-    get(this, 'intl.locale')[0] === 'zh-hans' ? set(extraParams, 'Language', 'zh-CN') : {};
+    get(this, 'intl.locale')[0] === 'zh-hans' && set(extraParams, 'language', 'zh-CN');
 
-    return this.queryFromTencent('cvm', 'DescribeZones', ENDPOINT, extraParams).then((res) => {
+    return this.queryFromTencent('zones', extraParams).then((res) => {
       set(this, 'zoneChoices', get(res, 'ZoneSet').filterBy('ZoneState', 'AVAILABLE').map((zone) => {
         return {
           label:      get(zone, 'ZoneName'),
@@ -711,6 +688,20 @@ export default Ember.Component.extend(ClusterDriver, {
         minDiskSize: d.MinDiskSize,
       }
     })
+  },
+
+  getQueryParamsString(params, deep = false) {
+    const keys = Object.keys(params).sort((a, b) => {
+      return a < b ? -1 : 1;
+    });
+
+    return keys.map((key) => {
+      if (params[key] === undefined) {
+        return '';
+      }
+
+      return `${ key }${ deep ? encodeURIComponent('=') : '=' }${ encodeURIComponent(params[key]) }`;
+    }).join(deep ? encodeURIComponent('&') : '&');
   },
   // Any computed properties or custom logic can go here
 });
