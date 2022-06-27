@@ -680,7 +680,9 @@ export default Ember.Component.extend(ClusterDriver, {
   getDiskChoices(usage) {
     const { diskConfigSet = [] } = this
 
-    return diskConfigSet.filter((d) => d.DiskUsage === usage).map((d) => {
+    const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD'];
+
+    return diskConfigSet.filter((d) => d.DiskUsage === usage && DISKS.includes(d.DiskType)).map((d) => {
       return {
         label:       `clusterNew.tencenttke.disk.${ d.DiskType }`,
         value:       d.DiskType,
