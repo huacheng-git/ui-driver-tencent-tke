@@ -45,6 +45,7 @@ const languages = {
   'zh-hant-tw': {"clusterNew":{"tencenttke":{"label":"騰訊雲Kubernetes服務","shortLabel":"Tencent TKE","access":{"next":"下一步: 配置叢集","loading":"從騰訊雲獲取VPC信息","title":"賬戶認證","detail":"選擇騰訊雲Kubernetes服務所使用的區域"},"cluster":{"title":"叢集配置","detail":"選擇騰訊雲Kubernetes服務中使用的VPC和版本","next":"下一步: 選擇主機類型","loading":"從騰訊雲獲取可用區信息","name":{"required":"請輸入叢集名稱"}},"node":{"title":"主機類型","detail":"選擇騰訊雲Kubernetes服務中使用的主機類型","next":"下一步: 配置節點","loading":"從騰訊雲獲取節點配置信息"},"instance":{"title":"節點配置","detail":"配置騰訊雲Kubernetes服務中的節點"},"subnet":{"label":"子網","required":"請選擇子網"},"os":{"label":"操作系統"},"disk":{"LOCAL_BASIC":"Local Basic","LOCAL_SSD":"Local SSD","CLOUD_BASIC":"Cloud Basic","CLOUD_PREMIUM":"Cloud Premium","CLOUD_SSD":"Cloud SSD"},"rootSize":{"label":"系統盤大小","placeholder":"例如: 25"},"rootType":{"label":"系統盤類型"},"storageType":{"label":"數據盤類型"},"storageSize":{"label":"數據盤大小","placeholder":"例如: 10"},"bandwidth":{"label":"帶寬","placeholder":"例如: 10"},"nodeCount":{"label":"節點數量","placeholder":"例如: 3","required":"請輸入節點數量","help":"將要創建的騰訊雲Kubernetes服務中所含有的節點數量"},"bandwidthType":{"label":"帶寬類型","hour":"按帶寬使用時長計費","traffic":"按流量計費"},"keyPair":{"label":"密鑰","required":"請選擇密鑰"},"region":{"label":"區域"},"secretId":{"label":"密鑰ID","placeholder":"您的騰訊雲API密鑰ID","required":"請輸入密鑰ID"},"secretKey":{"label":"密鑰","placeholder":"您的騰訊雲API密鑰","provided":"已提供","required":"請輸入密鑰"},"securityGroup":{"label":"安全組","required":"請選擇安全組"},"vpc":{"label":"VPC","required":"請選擇VPC"},"version":{"label":"Kubernetes版本","warning":"“{version}”，此版本不在 Rancher 支持矩陣範圍內，請升級 Rancher 版本。可參考","warningTip":"Rancher 支持矩陣。"},"cidr":{"label":"容器網路 CIDR","placeholder":"例如: 172.16.0.0/16","required":"請輸入容器網路的CIDR"},"zone":{"label":"可用區","required":"請選擇可用區"},"instanceType":{"label":"實例類型","required":"請選擇實例類型"},"regions":{"ap-guangzhou":"廣州","ap-shanghai":"上海","ap-beijing":"北京","ap-chengdu":"成都","ap-chongqing":"重慶","ap-nanjing":"南京","ap-hongkong":"香港","ap-singapore":"新加坡","na-toronto":"多倫多","ap-bangkok":"曼谷","ap-mumbai":"孟買","ap-seoul":"首爾","ap-tokyo":"東京","na-siliconvalley":"矽谷","na-ashburn":"弗吉尼亞","eu-frankfurt":"法蘭克福","eu-moscow":"莫斯科","ap-jakarta":"雅加達","sa-saopaulo":"聖保羅"}}}},
 };
 
+const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD'];
 
 /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
 export default Ember.Component.extend(ClusterDriver, {
@@ -415,14 +416,14 @@ export default Ember.Component.extend(ClusterDriver, {
 
   maxSystemDiskSize: computed('config.rootType', function() {
     const { rootDiskChoices = [] } = this
-    const disk = rootDiskChoices.findBy('value', get(this, 'config.rootType'))
+    const disk = rootDiskChoices.findBy('value', get(this, 'config.rootType')) || {};
 
     return get(disk, 'maxDiskSize')
   }),
 
   minSystemDiskSize: computed('config.rootType', function() {
     const { rootDiskChoices = [] } = this
-    const disk = rootDiskChoices.findBy('value', get(this, 'config.rootType'))
+    const disk = rootDiskChoices.findBy('value', get(this, 'config.rootType')) || {};
 
     return get(disk, 'minDiskSize')
   }),
@@ -628,8 +629,8 @@ export default Ember.Component.extend(ClusterDriver, {
       instanceFamilies: (get(this, 'config.instanceType') || '').split('.').get('firstObject')
     }).then((res) => {
       const diskConfigSet = get(res, 'DiskConfigSet').filter((d) => d.DiskChargeType === 'POSTPAID_BY_HOUR')
-      const dataDisks = diskConfigSet.filter((d) => d.DiskUsage === DATA_DISK)
-      const systemDisks = diskConfigSet.filter((d) => d.DiskUsage === SYSTEM_DISK)
+      const dataDisks = diskConfigSet.filter((d) => d.DiskUsage === DATA_DISK && DISKS.includes(d.DiskType) )
+      const systemDisks = diskConfigSet.filter((d) => d.DiskUsage === SYSTEM_DISK && DISKS.includes(d.DiskType))
 
       if (get(this, 'isNew')) {
         setProperties(this, {
@@ -679,8 +680,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
   getDiskChoices(usage) {
     const { diskConfigSet = [] } = this
-
-    return diskConfigSet.filter((d) => d.DiskUsage === usage).map((d) => {
+    return diskConfigSet.filter((d) => d.DiskUsage === usage && DISKS.includes(d.DiskType)).map((d) => {
       return {
         label:       `clusterNew.tencenttke.disk.${ d.DiskType }`,
         value:       d.DiskType,
