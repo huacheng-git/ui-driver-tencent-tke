@@ -47,6 +47,73 @@ const languages = {
 
 const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD'];
 
+const OS_IMAGE = [
+  {
+      "Alias": "CentOS 7.2 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-rkiynh11",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "centos7.2x86_64",
+      "SeriesName": "centos7.2x86_64",
+  },
+  {
+      "Alias": "CentOS 7.6 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-9qabwvbn",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "centos7.6.0_x64",
+      "SeriesName": "centos7.6.0_x64",
+  },
+  {
+      "Alias": "TencentOS Server 2.4",
+      "Arch": "amd64",
+      "ImageId": "img-hdt9xxkt",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "tlinux2.4x86_64",
+      "SeriesName": "TencentOS Server 2.4",
+  },
+  {
+      "Alias": "Ubuntu Server 16.04.1 LTS 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-4wpaazux",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "ubuntu16.04.1 LTSx86_64",
+      "SeriesName": "ubuntu16.04.1 LTSx86_64",
+  },
+  {
+      "Alias": "Ubuntu Server 18.04.1 LTS 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-pi0ii46r",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "ubuntu18.04.1x86_64",
+      "SeriesName": "ubuntu18.04.1x86_64",
+  },
+  {
+      "Alias": "CentOS 7.8 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-3la7wgnt",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "centos7.8.0_x64",
+      "SeriesName": "centos7.8.0_x64",
+  },
+  {
+      "Alias": "CentOS 8.0 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-25szkc8t",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "centos8.0x86_64",
+      "SeriesName": "centos8.0x86_64",
+  },
+  {
+      "Alias": "TencentOS Server 3.1 (TK4)",
+      "Arch": "amd64",
+      "ImageId": "img-eb30mz89",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "tlinux3.1x86_64",
+      "SeriesName": "TencentOS Server 3.1 (TK4)",
+  }
+];
+
 /*!!!!!!!!!!!DO NOT CHANGE START!!!!!!!!!!!*/
 export default Ember.Component.extend(ClusterDriver, {
   driverName:  '%%DRIVERNAME%%',
@@ -223,11 +290,12 @@ export default Ember.Component.extend(ClusterDriver, {
         return;
       }
 
+      this.getImages();
+
       all([
         this.fetchSubnets(),
         this.fetchZones(),
         this.fetchNodeTypes(),
-        this.fetchImages(),
       ]).then(() => {
         set(this, 'step', 3);
         cb(true);
@@ -592,19 +660,17 @@ export default Ember.Component.extend(ClusterDriver, {
     });
   },
 
-  fetchImages() {
-    return this.queryFromTencent('images').then((res) => {
-      set(this, 'osChoices', get(res, 'ImageInstanceSet').filter((image) => {
-        const label = get(image, 'Alias');
+  getImages() {
+    const out = [];
 
-        return !(label.includes('GPU') || label.includes('BMS') || label.includes('Tencent') || label.includes('TKE-Optimized'))
-      }).sort((a, b) => get(a, 'Alias') > get(b, 'Alias') ? -1 : 1).map((image) => {
-        return {
-          label:  get(image, 'Alias'),
-          value:  get(image, 'OsName'),
-        };
-      }));
+    OS_IMAGE.forEach(image=>{
+      out.push({
+        label:  get(image, 'Alias'),
+        value:  get(image, 'OsName'),
+      })
     });
+
+    set(this, 'osChoices', out.sort((a, b) => a.label < b.label ? -1 : 1));
   },
 
   fetchSecurityGroups() {
