@@ -519,7 +519,7 @@ export default Ember.Component.extend(ClusterDriver, {
     const versionChoices = get(this, 'versionChoices') || [];
 
     return versionChoices.find(v=>{
-      return v.value === kubernetesVersion && v.rancherEnabled
+      return v.value === kubernetesVersion && !v.rancherEnabled
     })
   }),
 
@@ -634,7 +634,7 @@ export default Ember.Component.extend(ClusterDriver, {
       });
 
       if(get(this, 'config.clusterVersion') === null){
-        const version = versions.reverse().find(item=>!item.rancherEnabled);
+        const version = versions.reverse().find(item=>item.rancherEnabled);
 
         version && set(this, 'config.clusterVersion', version.value);
       }
