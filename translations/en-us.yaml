@@ -77,8 +77,8 @@ clusterNew:
       required: VPC is required
     version:
       label: Kubernetes Version
-      warning: “{version}”，This version is not supported by Rancher, please upgrade Rancher version for reference
-      warningTip: Rancher supported versions.
+      warning: “{version}”，This version is not supported by Rancher. Reference
+      warningTip: Rancher support matrix.
     cidr:
       label: Container Network CIDR
       placeholder: e.g. 172.16.0.0/16
