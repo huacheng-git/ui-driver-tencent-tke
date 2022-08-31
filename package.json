@@ -36,6 +36,7 @@
     "gulp-yaml": "^2.0.3",
     "jshint": "2.9.7",
     "replace-string": "^2.0.0",
-    "yargs": "^15.3.1"
+    "yargs": "^15.3.1",
+    "gulp-jsoncombine": "^1.0.4"
   }
 }
