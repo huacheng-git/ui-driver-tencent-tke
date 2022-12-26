@@ -37,7 +37,7 @@ const BAND_WIDTH = [
   }
 ];
 
-const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD'];
+const DISKS = ['LOCAL_BASIC', 'LOCAL_SSD', 'CLOUD_BASIC', 'CLOUD_PREMIUM', 'CLOUD_SSD', 'CLOUD_BSSD'];
 
 const OS_IMAGE = [
   {
@@ -81,6 +81,14 @@ const OS_IMAGE = [
       "SeriesName": "ubuntu18.04.1x86_64",
   },
   {
+      "Alias": "Ubuntu Server 20.04.1 LTS 64bit",
+      "Arch": "amd64",
+      "ImageId": "img-22trbn9x",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "ubuntu20.04x86_64",
+      "SeriesName": "ubuntu20.04x86_64",
+  },
+  {
       "Alias": "CentOS 7.8 64bit",
       "Arch": "amd64",
       "ImageId": "img-3la7wgnt",
@@ -95,6 +103,15 @@ const OS_IMAGE = [
       "OsCustomizeType": "GENERAL",
       "OsName": "centos8.0x86_64",
       "SeriesName": "centos8.0x86_64",
+  },
+  {
+      "Alias": "TencentOS Server 2.4 (TK4)",
+      "Arch": "amd64",
+      "ImageId": "img-9axl1k53",
+      "OsCustomizeType": "GENERAL",
+      "OsName": "tlinux2.4(tkernel4)x86_64",
+      "SeriesName": "TencentOS Server 2.4 (TK4)",
+      "Status": "online"
   },
   {
       "Alias": "TencentOS Server 3.1 (TK4)",
@@ -462,14 +479,14 @@ export default Ember.Component.extend(ClusterDriver, {
 
   maxDataDiskSize: computed('config.storageType', function() {
     const { storageDiskChoices = [] } = this
-    const disk = storageDiskChoices.findBy('value', get(this, 'config.storageType'))
+    const disk = storageDiskChoices.findBy('value', get(this, 'config.storageType')) || {};
 
     return get(disk, 'maxDiskSize')
   }),
 
   minDataDiskSize: computed('config.storageType', function() {
     const { storageDiskChoices = [] } = this
-    const disk = storageDiskChoices.findBy('value', get(this, 'config.storageType'))
+    const disk = storageDiskChoices.findBy('value', get(this, 'config.storageType')) || {};
 
     return get(disk, 'minDiskSize')
   }),
@@ -485,7 +502,7 @@ export default Ember.Component.extend(ClusterDriver, {
     const { rootDiskChoices = [] } = this
     const disk = rootDiskChoices.findBy('value', get(this, 'config.rootType')) || {};
 
-    return get(disk, 'minDiskSize')
+    return get(disk, 'minDiskSize');
   }),
 
   regionShowValue: computed('regionChoices.[]', 'config.region', 'intl.locale', function() {
@@ -612,7 +629,7 @@ export default Ember.Component.extend(ClusterDriver, {
 
   fetchVersions() {
     return this.queryFromTencent('versions').then((res) => {
-      const versionRange = ['1.20', '1.22'];
+      const versionRange = ['1.23', '1.24'];
       const versions = get(res, 'VersionInstanceSet').map((key) => {
         const enabled = versionRange.find(v=>{
           return key.Version.startsWith(`${v}.`);

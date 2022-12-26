@@ -33,6 +33,7 @@ clusterNew:
       CLOUD_BASIC: Cloud Basic
       CLOUD_PREMIUM: Cloud Premium
       CLOUD_SSD: Cloud SSD
+      CLOUD_BSSD: Cloud BSSD
     rootSize:
       label: Root Disk Size
       placeholder: e.g. 25

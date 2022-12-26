@@ -28,11 +28,12 @@ clusterNew:
     os:
       label: 操作系统
     disk:
-      LOCAL_BASIC: Local Basic
-      LOCAL_SSD: Local SSD
-      CLOUD_BASIC: Cloud Basic
-      CLOUD_PREMIUM: Cloud Premium
-      CLOUD_SSD: Cloud SSD
+      LOCAL_BASIC: 本地硬盘
+      LOCAL_SSD: 本地 SSD 硬盘
+      CLOUD_BASIC: 普通云硬盘
+      CLOUD_PREMIUM: 高性能云硬盘
+      CLOUD_SSD: SSD云硬盘
+      CLOUD_BSSD: 通用性 SSD 云硬盘
     rootSize:
       label: 系统盘大小
       placeholder: '例如: 25'
